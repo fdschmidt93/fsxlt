@@ -1,0 +1,56 @@
+# NER zero shot transfer to
+# Selected wikiann languages
+# MasakhaNER
+
+_target_: trident.TridentDataModule
+_recursive_: false
+
+datamodule_cfg:
+  remove_unused_columns: true
+  keep_raw_dataset: false
+  setup:
+    _target_: trident.utils.data.setup
+    _recursive_: false
+  on_after_setup:
+    _target_: src.tasks.token_classification.processor.on_after_setup
+    max_length: 510
+    tokenizer:
+      _target_: transformers.AutoTokenizer.from_pretrained
+      pretrained_model_name_or_path: ${module.model.pretrained_model_name_or_path}
+    column_names:
+      text: tokens
+      label: pos_tags
+
+dataloader_cfg:
+  _target_: torch.utils.data.dataloader.DataLoader
+  collate_fn:
+    _target_: transformers.data.data_collator.DataCollatorForTokenClassification
+    tokenizer:
+      _target_: transformers.AutoTokenizer.from_pretrained
+      pretrained_model_name_or_path: ${module.model.pretrained_model_name_or_path}
+    max_length: 510
+    padding: true
+  train:
+    batch_size: 32
+    shuffle: true
+  val:
+    batch_size: 256
+    shuffle: false
+  test:
+    batch_size: 256
+    shuffle: false
+
+dataset_cfg:
+  _target_: datasets.load.load_dataset
+  train:
+    path: xtreme
+    name: udpos.English
+    split: train
+  val:
+    path: xtreme
+    name: udpos.English
+    split: validation
+  test: 
+    path: xtreme
+    name: udpos.English
+    split: test

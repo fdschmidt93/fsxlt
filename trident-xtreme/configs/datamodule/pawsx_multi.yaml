@@ -1,0 +1,224 @@
+defaults:
+ # base trident datamodule configuration
+ - trident
+
+dataset_cfg:
+  _method_: # get methods of _target_ object
+    map: # dataset.map -> tokenization
+      # kwargs for dataset.map
+      function:
+        _target_: trident.utils.hydra.partial
+        _partial_: src.tasks.text_classification.processor.preprocess_fn
+        column_names:
+          text: sentence1
+          text_pair: sentence2
+      remove_columns:
+        - "id"
+        - "sentence1"
+        - "sentence2"
+  train:
+    _datasets_:
+      en:
+        path: paws-x
+        name: en
+        split: train
+      de:
+        path: paws-x
+        name: de
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+      es:
+        path: paws-x
+        name: es
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+      fr:
+        path: paws-x
+        name: fr
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+      ja:
+        path: paws-x
+        name: ja
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+      ko:
+        path: paws-x
+        name: ko
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+      zh:
+        path: paws-x
+        name: zh
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+  val:
+    _datasets_:
+      validation_pawsx_de:
+        path: paws-x
+        name: de
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_de:
+        path: paws-x
+        name: de
+        split: test
+      validation_pawsx_es:
+        path: paws-x
+        name: es
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_es:
+        path: paws-x
+        name: es
+        split: test
+      validation_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: test
+      validation_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: test
+      validation_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: test
+      validation_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 2000
+      test_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: test
+      validation_pawsx_en:
+        path: paws-x
+        name: en
+        split: validation
+      test_pawsx_en:
+        path: paws-x
+        name: en
+        split: test
+  test:
+    _datasets_:
+      validation_pawsx_en:
+        path: paws-x
+        name: en
+        split: validation
+      test_pawsx_en:
+        path: paws-x
+        name: en
+        split: test

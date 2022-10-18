@@ -1,0 +1,12 @@
+Afrikaans       1
+Arabic          5
+Basque          2
+German          8
+Hindi           1
+Hungarian       7
+Indonesian      3
+Japanese        1
+Russian         3
+Tamil           3
+Urdu            8
+Chinese         1

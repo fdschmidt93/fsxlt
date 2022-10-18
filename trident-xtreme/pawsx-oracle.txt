@@ -1,0 +1,6 @@
+de 7
+es 9
+fr 8
+ja 1
+ko 8
+zh 6

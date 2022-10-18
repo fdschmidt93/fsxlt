@@ -1,0 +1,33 @@
+prepare_cfg:
+  batch: # takes (module: TridentModule, batch: dict, stage: star)
+    _target_: trident.utils.hydra.partial
+    _partial_: src.tasks.retrieval.utils.get_hidden_states
+  outputs: # takes (module: TridentModule, outputs: dict, batch: dict, stage: str)                             
+    _target_: trident.utils.hydra.partial
+    _partial_: src.projects.robust.utils.process_outputs
+  step_outputs: # null 
+    _target_: trident.utils.hydra.partial
+    _partial_: src.projects.robust.utils.store_data
+
+# Which keys/attributes are supposed to be collected from `outputs` and `batch`
+step_outputs:
+  batch:
+    - "attention_mask"
+    - "labels"
+  outputs:
+    - "embs" # can be a str
+
+# either metrics or val_metrics and test_metrics
+# where the latter
+# metrics_cfg should be copied for each dataset by default unless _datasets_ is specified
+metrics_cfg:
+  # name of the metric used eg for logging
+  entropy:
+    # instructions to instantiate metric, preferrably torchmetrics.Metric
+    metric:
+      _target_: trident.utils.hydra.partial
+      _partial_: src.projects.robust.utils.compute_entropy
+    # either "eval_step" or "epoch_end"
+    compute_on: "epoch_end"
+    kwargs: 
+      embs: "outputs:embs"

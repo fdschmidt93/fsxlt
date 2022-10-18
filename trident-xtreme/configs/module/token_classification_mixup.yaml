@@ -1,0 +1,15 @@
+_recursive_: false
+_target_: src.projects.mixup.module.MixUpForTokenClassification
+
+defaults:
+# interleaved with setup so instantiated later (recursive false)
+- trident
+- /evaluation: token_classification
+
+module_cfg:
+  setup:
+    _target_: src.tasks.token_classification.processor.module_setup
+    
+model:
+  _target_: transformers.AutoModelForTokenClassification.from_pretrained
+  pretrained_model_name_or_path: "prajjwal1/bert-tiny"

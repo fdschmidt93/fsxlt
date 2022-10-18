@@ -1,0 +1,13 @@
+af 3
+ar 1
+de 3
+ja 5
+ru 9 
+sw 6
+ta 2
+ur 2
+vi 6
+zh 9
+qu 5
+yo 3
+rw 4

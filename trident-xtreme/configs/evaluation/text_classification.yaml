@@ -1,0 +1,39 @@
+prepare_cfg:
+  batch: null  # takes (module: TridentModule, batch: dict, stage: star)
+  outputs:     # takes (module: TridentModule, outputs: dict, batch: dict, stage: str)                             
+    _target_: trident.utils.hydra.partial
+    _partial_: src.tasks.text_classification.eval.get_preds
+    # takes (module: TridentModule, flattened_step_outputs: dict, stage: str)
+    # where list of step_outputs are flattened
+  step_outputs: null 
+
+# Which keys/attributes are supposed to be collected from `outputs` and `batch`
+step_outputs:
+  outputs:
+    - "preds" # can be a str
+    - "logits"
+  batch: # or a list[str]
+    - labels
+
+# either metrics or val_metrics and test_metrics
+# where the latter
+# metrics_cfg should be copied for each dataset by default unless _datasets_ is specified
+metrics_cfg:
+  # name of the metric used eg for logging
+  acc:
+    # instructions to instantiate metric, preferrably torchmetrics.Metric
+    metric:
+      _target_: trident.utils.hydra.partial
+      _partial_: torchmetrics.functional.accuracy
+    # either "eval_step" or "epoch_end"
+    compute_on: "epoch_end"
+    kwargs: 
+      preds: "outputs:preds"
+      target: "outputs:labels"
+  # f1:
+  #   metric:
+  #     _target_: torchmetrics.F1
+  #   compute_on: "eval_step"
+  #   kwargs:
+  #     preds: "outputs:preds"
+  #     target: "batch:labels"

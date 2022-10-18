@@ -1,0 +1,189 @@
+_target_: trident.TridentDataModule
+_recursive_: false
+
+datamodule_cfg:
+  remove_unused_columns: true
+  keep_raw_dataset: false
+  setup:
+    _target_: trident.utils.data.setup
+    _recursive_: false
+  on_after_setup:
+    _target_: src.tasks.token_classification.processor.on_after_setup
+    max_length: 510
+    tokenizer:
+      _target_: transformers.AutoTokenizer.from_pretrained
+      pretrained_model_name_or_path: ${module.model.pretrained_model_name_or_path}
+      padding: false
+      truncation: true
+    column_names:
+      text: tokens
+      label: pos_tags
+
+dataloader_cfg:
+  _target_: torch.utils.data.dataloader.DataLoader
+  collate_fn:
+    _target_: transformers.data.data_collator.DataCollatorForTokenClassification
+    tokenizer:
+      _target_: transformers.AutoTokenizer.from_pretrained
+      pretrained_model_name_or_path: ${module.model.pretrained_model_name_or_path}
+      padding: true
+    max_length: 510
+  train:
+    batch_size: 8
+    shuffle: true
+  val:
+    batch_size: 64
+    shuffle: false
+  test:
+    batch_size: 64
+    shuffle: false
+
+dataset_cfg:
+  _target_: datasets.load.load_dataset
+
+  train:
+    _datasets_:
+      english:
+        path: xtreme
+        name: udpos.English
+        split: train
+      arabic:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Arabic
+        split: train
+      basque:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Basque
+        split: train
+      hungarian:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Hungarian
+        split: train
+      indonesian:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Indonesian
+        split: train
+      japanese:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Japanese
+        split: train
+      urdu:
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 0
+                - ${shots}
+        path: xtreme
+        name: udpos.Urdu
+        split: train
+
+  val:
+    _datasets_:
+      validation_udpos_en:
+        path: xtreme
+        name: udpos.English
+        split: validation
+      test_udpos_en:
+        path: xtreme
+        name: udpos.English
+        split: test
+      validation_udpos_ar:
+        path: xtreme
+        name: udpos.Arabic
+        split: validation
+      test_udpos_ar:
+        path: xtreme
+        name: udpos.Arabic
+        split: test
+      validation_udpos_eu:
+        path: xtreme
+        name: udpos.Basque
+        split: validation
+      test_udpos_eu:
+        path: xtreme
+        name: udpos.Basque
+        split: test
+      validation_udpos_hu:
+        path: xtreme
+        name: udpos.Hungarian
+        split: validation
+      test_udpos_hu:
+        path: xtreme
+        name: udpos.Hungarian
+        split: test
+      validation_udpos_id:
+        path: xtreme
+        name: udpos.Indonesian
+        split: validation
+      test_udpos_id:
+        path: xtreme
+        name: udpos.Indonesian
+        split: test
+      validation_udpos_ja:
+        path: xtreme
+        name: udpos.Japanese
+        split: validation
+      test_udpos_ja:
+        path: xtreme
+        name: udpos.Japanese
+        split: test
+      validation_udpos_ur:
+        path: xtreme
+        name: udpos.Urdu
+        split: validation
+      test_udpos_ur:
+        path: xtreme
+        name: udpos.Urdu
+        split: test
+
+  test: 
+    _datasets_:

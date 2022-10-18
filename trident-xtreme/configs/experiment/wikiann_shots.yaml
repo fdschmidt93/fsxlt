@@ -1,0 +1,52 @@
+# @package _global_
+
+# to execute this experiment run:
+# python run.py experiment=mnli
+
+defaults:
+  - override /trainer: default.yaml # choose trainer from 'configs/trainer/'
+  - override /module: token_classification.yaml
+  - override /datamodule: wikiann_shots.yaml
+  - override /callbacks: null
+  - override /config_callbacks: trident.yaml
+  - override /logger: wandb.yaml
+
+test_after_training: false
+trainer:
+  max_epochs: 50
+  gpus: 1
+  precision: 16
+  enable_checkpointing: false
+
+seed: 42
+lang: ???
+shots: ???
+
+module:
+  model:
+    pretrained_model_name_or_path: "xlm-roberta-base"
+  # module_cfg:
+  #   weights_from_checkpoint:
+  #     ckpt_path: ???
+  optimizer:
+    lr: 0.00002  # 2e-5
+  # scheduler deactivated
+  scheduler: null
+
+logger:
+  wandb:
+    project: "wikiann-shots-${lang}"
+    name: "seed=${seed}-shots=${shots}-epochs=${trainer.max_epochs}-lr=${module.optimizer.lr}"
+
+
+# callbacks:
+#   model_checkpoint_on_epoch:
+#     _target_: pytorch_lightning.callbacks.ModelCheckpoint
+#     monitor: null # name of the logged metric which determines when model is improving
+#     mode: "max" # can be "max" or "min"
+#     every_n_epochs: 50 # truncated length of MNLI train / 16
+#     verbose: true
+#     save_top_k: -1 # -1 -> all models are saved
+#     save_last: false # additionaly always save model from last epoch
+#     dirpath: "checkpoints/"
+#     auto_insert_metric_name: false

@@ -1,0 +1,139 @@
+
+defaults:
+ # base trident datamodule configuration
+ - trident
+
+dataset_cfg:
+  _method_: # get methods of _target_ object
+    map: # dataset.map -> tokenization
+      # kwargs for dataset.map
+      function:
+        _target_: trident.utils.hydra.partial
+        _partial_: src.tasks.text_classification.processor.preprocess_fn
+        column_names:
+          text: sentence1
+          text_pair: sentence2
+      remove_columns:
+        - "id"
+        - "sentence1"
+        - "sentence2"
+  train:
+    path: paws-x
+    name: en
+    split: train
+  val:
+    _datasets_:
+      validation_pawsx_en:
+        path: paws-x
+        name: en
+        split: validation
+      validation_pawsx_de:
+        path: paws-x
+        name: de
+        split: validation
+      validation_pawsx_es:
+        path: paws-x
+        name: es
+        split: validation
+      validation_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: validation
+      validation_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: validation
+      validation_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: validation
+      validation_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: validation
+      test_pawsx_en:
+        path: paws-x
+        name: en
+        split: test
+      test_pawsx_de:
+        path: paws-x
+        name: de
+        split: test
+      test_pawsx_es:
+        path: paws-x
+        name: es
+        split: test
+      test_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: test
+      test_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: test
+      test_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: test
+      test_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: test
+  test:
+    _datasets_:
+      validation_pawsx_en:
+        path: paws-x
+        name: en
+        split: validation
+      validation_pawsx_de:
+        path: paws-x
+        name: de
+        split: validation
+      validation_pawsx_es:
+        path: paws-x
+        name: es
+        split: validation
+      validation_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: validation
+      validation_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: validation
+      validation_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: validation
+      validation_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: validation
+      test_pawsx_en:
+        path: paws-x
+        name: en
+        split: test
+      test_pawsx_de:
+        path: paws-x
+        name: de
+        split: test
+      test_pawsx_es:
+        path: paws-x
+        name: es
+        split: test
+      test_pawsx_fr:
+        path: paws-x
+        name: fr
+        split: test
+      test_pawsx_ja:
+        path: paws-x
+        name: ja
+        split: test
+      test_pawsx_ko:
+        path: paws-x
+        name: ko
+        split: test
+      test_pawsx_zh:
+        path: paws-x
+        name: zh
+        split: test

@@ -1,0 +1,37 @@
+# @package _global_
+
+# to execute this experiment run:
+# python run.py experiment=mnli
+
+defaults:
+  - override /trainer: default.yaml # choose trainer from 'configs/trainer/'
+  - override /module: text_classification.yaml
+  - override /datamodule: anli_mixup.yaml
+  - override /callbacks: null
+  - override /config_callbacks: trident.yaml
+  - override /logger: wandb.yaml
+
+seed: 42
+lang: aym
+shots: ???
+
+trainer:
+  max_epochs: 5
+  gpus: 1
+  precision: 16
+
+module:
+  _target_: src.projects.mixup.module.MixUpTransformer
+  alpha: 1
+  model:
+    _target_: src.modules.modeling.auto_models.AutoModelForCLSClassification
+    pretrained_model_name_or_path: "xlm-roberta-base"
+    num_labels: 3
+  module_cfg:
+    weights_from_checkpoint:
+      ckpt_path: ???
+
+logger:
+  wandb:
+    project: "anli-mixup-${lang}"
+    name: "seed=${seed}-shots=${shots}-lr=${module.optimizer.lr}-epochs=${trainer.max_epochs}-alpha=${module.alpha}"

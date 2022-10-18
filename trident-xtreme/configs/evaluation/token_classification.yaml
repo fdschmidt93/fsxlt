@@ -1,0 +1,27 @@
+prepare_cfg:
+  batch: null
+  outputs: null
+  step_outputs: null
+
+  # step_outputs:
+  #   _recursive_: False
+  #   _target_: trident.utils.hydra.partial
+  #   # _partial_: src.tasks.retrieval.utils.nearest_neighbor
+  #   _partial_: src.tasks.token_classification.processor.prepare_step_outputs
+
+step_outputs:
+  outputs: "logits"
+  batch:
+    - "labels"
+    - "attention_mask"
+
+metrics_cfg:
+    f1:
+      metric:
+        _target_: trident.utils.hydra.partial
+        _partial_: src.tasks.token_classification.processor.compute_metrics
+      compute_on: "epoch_end"
+      kwargs:
+        logits: "outputs:logits"
+        labels: "outputs:labels"
+        label_list: "self:trainer.datamodule.label_list"

@@ -1,0 +1,87 @@
+defaults:
+ # base trident datamodule configuration
+ - trident
+
+dataset_cfg:
+  _method_: # get methods of _target_ object
+    map: # dataset.map -> tokenization
+      # kwargs for dataset.map
+      function:
+        _target_: trident.utils.hydra.partial
+        _partial_: src.tasks.text_classification.processor.preprocess_fn
+        column_names:
+          text: premise
+          text_pair: hypothesis
+    # unify output format of MNLI and XNLI
+    set_format:
+      columns:
+        - "input_ids"
+        - "attention_mask"
+        - "label"
+  train:
+    path: americas_nli
+    name: ${lang}
+    split: validation
+    _method_:
+      shuffle:
+        seed: ${seed}
+      select:
+        indices:
+          _target_: builtins.range
+          _args_:
+            - 0
+            - ${shots}
+  val:
+    _datasets_:
+      validation_anli_lang:
+        path: americas_nli
+        name: ${lang}
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 742
+      test_anli_lang:
+        path: americas_nli
+        name: ${lang}
+        split: test
+      validation_xnli_zh:
+        path: xnli
+        name: zh
+        split: validation
+      test_xnli_zh:
+        path: xnli
+        name: zh
+        split: test
+  test:
+    _datasets_:
+      validation_anli_lang:
+        path: americas_nli
+        name: ${lang}
+        split: validation
+        _method_:
+          shuffle:
+            seed: ${seed}
+          select:
+            indices:
+              _target_: builtins.range
+              _args_:
+                - 500
+                - 742
+      test_anli_lang:
+        path: americas_nli
+        name: ${lang}
+        split: test
+      validation_xnli_zh:
+        path: xnli
+        name: zh
+        split: validation
+      test_xnli_zh:
+        path: xnli
+        name: zh
+        split: test

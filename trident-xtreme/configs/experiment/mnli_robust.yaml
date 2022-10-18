@@ -1,0 +1,47 @@
+# @package _global_
+
+# to execute this experiment run:
+# python run.py experiment=mnli
+
+defaults:
+  - override /trainer: default.yaml # choose trainer from 'configs/trainer/'
+  - override /module: text_classification.yaml
+  - override /datamodule: mnli_zs.yaml
+  - override /callbacks: null
+  - override /config_callbacks: trident.yaml
+  - override /logger: wandb.yaml
+
+seed: 42
+
+trainer:
+  max_epochs: 10
+  gpus: 1
+  precision: 16
+  # val_check_interval: 0.2
+  num_sanity_val_steps: 0
+  deterministic: true
+
+module:
+  _target_: src.projects.mixup.module.RobustSequenceClassification
+  optimizer:
+    lr: ???
+  dim: ???
+  model:
+    _target_: src.modules.modeling.auto_models.AutoModelForCLSClassification
+    pretrained_model_name_or_path: "xlm-roberta-base"
+    num_labels: 3
+logger:
+  wandb:
+    name: "seed=${seed}-lr=${module.optimizer.lr}-epochs=${trainer.max_epochs}-dim=${module.dim}"
+    project: "mnli-zs-paper"
+
+callbacks:
+  model_checkpoint_on_epoch:
+    _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    monitor: null # name of the logged metric which determines when model is improving
+    every_n_epochs: 1 # truncated length of MNLI train / 16
+    verbose: false
+    save_top_k: -1 # -1 -> all models are saved
+    save_last: false # additionaly always save model from last epoch
+    dirpath: "checkpoints/"
+    auto_insert_metric_name: false

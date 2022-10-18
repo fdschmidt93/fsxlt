@@ -1,0 +1,35 @@
+# @package _global_
+
+defaults:
+  - override /trainer: default.yaml # choose trainer from 'configs/trainer/'
+  - override /module: text_classification.yaml
+  - override /datamodule: pawsx_mixup.yaml
+  - override /callbacks: null
+  - override /config_callbacks: trident.yaml
+  - override /logger: wandb.yaml
+
+seed: 42
+lang: ???
+shots: ???
+
+trainer:
+  max_epochs: 10
+  gpus: 1
+  precision: 16
+  enable_checkpointing: false
+
+module:
+  _target_: src.projects.mixup.module.MixUpTransformer
+  alpha: ???
+  model:
+    _target_: src.modules.modeling.auto_models.AutoModelForCLSClassification
+    pretrained_model_name_or_path: "xlm-roberta-base"
+    num_labels: 2
+  # module_cfg:
+  #   weights_from_checkpoint:
+  #     ckpt_path: ???
+
+logger:
+  wandb:
+    project: "pawsx-mixup-${lang}"
+    name: "seed=${seed}-shots=${shots}-lr=${module.optimizer.lr}-epochs=${trainer.max_epochs}-alpha=${module.alpha}"

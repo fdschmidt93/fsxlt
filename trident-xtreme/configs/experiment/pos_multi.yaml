@@ -1,0 +1,39 @@
+# @package _global_
+
+# to execute this experiment run:
+# python run.py experiment=mnli
+
+defaults:
+  - override /trainer: default.yaml # choose trainer from 'configs/trainer/'
+  - override /module: token_classification.yaml
+  - override /datamodule: pos_multi.yaml
+  - override /callbacks: null
+  - override /config_callbacks: trident.yaml
+  - override /logger: wandb.yaml
+
+trainer:
+  max_epochs: 10
+  gpus: 1
+  precision: 16
+  num_sanity_val_steps: 0
+  deterministic: true
+  # enable_checkpointing: false
+
+seed: 42
+shots: ???
+
+module:
+  _target_: src.projects.mixup.module.MultiTaskTokenClassification
+  gradient_checkpointing: false
+  model:
+    pretrained_model_name_or_path: "xlm-roberta-base"
+  setup:
+    _target_: src.tasks.token_classification.processor.module_setup
+  module_cfg:
+    weights_from_checkpoint:
+      ckpt_path: ???
+
+logger:
+  wandb:
+    project: ???
+    name: "seed=${seed}-shots=${shots}-lr=${module.optimizer.lr}-epochs=${trainer.max_epochs}"
